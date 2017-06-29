@@ -428,16 +428,19 @@
                         if (projectionOptions.namespace !== undefined) {
                             domNode = vnode.domNode = doc.createElementNS(projectionOptions.namespace, found);
                         } else {
-                            domNode = vnode.domNode = vnode.domNode || doc.createElement(found);
+                            var n = vnode.properties && vnode.properties.is ? doc.createElement(found, { is: vnode.properties.is }) : doc.createElement(found);
+                            domNode = vnode.domNode = vnode.domNode || n;
                             if (found === 'input' && vnode.properties && vnode.properties.type !== undefined) {
                                 // IE8 and older don't support setting input type after the DOM Node has been added to the document
                                 domNode.setAttribute('type', vnode.properties.type);
                             }
                         }
-                        if (insertBefore !== undefined) {
-                            parentNode.insertBefore(domNode, insertBefore);
-                        } else if (domNode.parentNode !== parentNode) {
-                            parentNode.appendChild(domNode);
+                        if (domNode) {
+                            if (insertBefore !== undefined) {
+                                parentNode.insertBefore(domNode, insertBefore);
+                            } else if (domNode.parentNode !== parentNode) {
+                                parentNode.appendChild(domNode);
+                            }
                         }
                     }
                     start = i + 1;
